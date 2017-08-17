@@ -29,7 +29,7 @@ PYBIND11_PLUGIN(_icepack_py)
          &Triangulation<2>::n_vertices,
          "Number of mesh vertices");
 
-  icepack.def("read_msh", &icepack::read_msh<2>,
+  icepack.def("read_msh", &icepack::read_msh,
               "Read a .msh file into a Triangulation");
 
   using icepack::Discretization;
