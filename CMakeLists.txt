@@ -1,7 +1,7 @@
 
 # -------------
 # Do not modify
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0.2)
 
 FIND_PACKAGE(deal.II 8.5 QUIET
   HINTS ${deal.II_DIR} ${DEAL_II_DIR} ../ ../../ $ENV{DEAL_II_DIR}
@@ -18,7 +18,7 @@ DEAL_II_INITIALIZE_CACHED_VARIABLES()
 
 project(icepack_py)
 
-## Build the python bindings for the core icepack library.
+find_package(icepack REQUIRED)
 find_package(pybind11 REQUIRED)
 
 include_directories(${PYTHON_INCLUDE_DIR})
@@ -31,3 +31,4 @@ set_target_properties(icepack_py PROPERTIES
   PREFIX "${PYTHON_MODULE_PREFIX}"
   SUFFIX "${PYTHON_MODULE_EXTENSION}"
 )
+
