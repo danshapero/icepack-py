@@ -1,2 +1,3 @@
 
-from _icepack_py import *
+from icepack_py import *
+

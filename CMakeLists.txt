@@ -3,7 +3,7 @@
 # Do not modify
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0.2)
 
-FIND_PACKAGE(deal.II 8.5 QUIET
+FIND_PACKAGE(deal.II 9.0 QUIET
   HINTS ${deal.II_DIR} ${DEAL_II_DIR} ../ ../../ $ENV{DEAL_II_DIR}
   )
 IF(NOT ${deal.II_FOUND})
@@ -22,13 +22,19 @@ find_package(icepack REQUIRED)
 find_package(pybind11 REQUIRED)
 
 include_directories(${PYTHON_INCLUDE_DIR})
-add_library(icepack_py MODULE src/icepack.cpp)
-DEAL_II_SETUP_TARGET(icepack_py)
-target_link_libraries(icepack_py icepack pybind11::module)
+pybind11_add_module(icepack_py MODULE src/icepack.cpp)
 
-set_target_properties(icepack_py PROPERTIES
-  OUTPUT_NAME "_icepack_py"
-  PREFIX "${PYTHON_MODULE_PREFIX}"
-  SUFFIX "${PYTHON_MODULE_EXTENSION}"
-)
+# Hacks to make the wrapper library link with deal.II
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+  set (_build "RELEASE")
+else()
+  set (_build "DEBUG")
+endif()
+
+set_property(TARGET icepack_py APPEND PROPERTY
+  INCLUDE_DIRECTORIES "${DEAL_II_INCLUDE_DIRS}")
+set_property(TARGET icepack_py APPEND_STRING PROPERTY
+  LINK_FLAGS " ${DEAL_II_LINKER_FLAGS} ${DEAL_II_LINKED_FLAGS_${_build}}")
+get_property("OBJECT_LIBRARY" TARGET icepack_py PROPERTY TYPE)
+target_link_libraries(icepack_py PRIVATE icepack)
 

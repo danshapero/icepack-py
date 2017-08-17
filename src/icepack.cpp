@@ -7,12 +7,12 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(_icepack_py, icepack)
+PYBIND11_MODULE(icepack_py, module)
 {
-  icepack.doc() = "icepack python bindings";
+  module.doc() = "icepack python bindings";
 
   using dealii::Point;
-  py::class_<Point<2>>(icepack, "Point2")
+  py::class_<Point<2>>(module, "Point2")
     .def(py::init<const double, const double>())
     .def(
       "__call__",
@@ -21,7 +21,7 @@ PYBIND11_MODULE(_icepack_py, icepack)
     );
 
   using dealii::Triangulation;
-  py::class_<Triangulation<2>>(icepack, "Triangulation2")
+  py::class_<Triangulation<2>>(module, "Triangulation2")
     .def("n_active_cells",
          py::overload_cast<>(&Triangulation<2>::n_active_cells, py::const_),
          "Number of mesh cells (quads in 2d, hexes in 3d)")
@@ -29,19 +29,19 @@ PYBIND11_MODULE(_icepack_py, icepack)
          &Triangulation<2>::n_vertices,
          "Number of mesh vertices");
 
-  icepack.def("read_msh", &icepack::read_msh,
-              "Read a .msh file into a Triangulation");
+  module.def("read_msh", &icepack::read_msh,
+             "Read a .msh file into a Triangulation");
 
   using icepack::Discretization;
-  py::class_<Discretization<2>>(icepack, "Discretization2")
+  py::class_<Discretization<2>>(module, "Discretization2")
     .def(py::init<const Triangulation<2>&, const unsigned int>());
 
   using icepack::Field;
-  py::class_<Field<2>>(icepack, "Field2")
+  py::class_<Field<2>>(module, "Field2")
     .def(py::init<const Discretization<2>&>());
 
   using icepack::VectorField;
-  py::class_<VectorField<2>>(icepack, "VectorField2")
+  py::class_<VectorField<2>>(module, "VectorField2")
     .def(py::init<const Discretization<2>&>());
 }
 
