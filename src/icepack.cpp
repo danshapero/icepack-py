@@ -1,15 +1,15 @@
 
-#include <pybind11/pybind11.h>
-#include <deal.II/grid/tria.h>
 #include <icepack/utilities.hpp>
 #include <icepack/discretization.hpp>
 #include <icepack/field.hpp>
+#include <icepack/mesh.hpp>
+#include <pybind11/pybind11.h>
 
 namespace py = pybind11;
 
-PYBIND11_PLUGIN(_icepack_py)
+PYBIND11_MODULE(_icepack_py, icepack)
 {
-  py::module icepack("_icepack_py", "icepack python bindings");
+  icepack.doc() = "icepack python bindings";
 
   using dealii::Point;
   py::class_<Point<2>>(icepack, "Point2")
@@ -43,7 +43,5 @@ PYBIND11_PLUGIN(_icepack_py)
   using icepack::VectorField;
   py::class_<VectorField<2>>(icepack, "VectorField2")
     .def(py::init<const Discretization<2>&>());
-
-
-  return icepack.ptr();
 }
+
