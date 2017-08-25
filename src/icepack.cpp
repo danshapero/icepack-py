@@ -4,8 +4,10 @@
 #include <icepack/field.hpp>
 #include <icepack/mesh.hpp>
 #include <pybind11/pybind11.h>
+#include <pybind11/stl_bind.h>
 
 namespace py = pybind11;
+PYBIND11_MAKE_OPAQUE(std::vector<dealii::Point<2>>);
 
 PYBIND11_MODULE(icepack_py, module)
 {
@@ -15,10 +17,12 @@ PYBIND11_MODULE(icepack_py, module)
   py::class_<Point<2>>(module, "Point2")
     .def(py::init<const double, const double>())
     .def(
-      "__call__",
+      "__getitem__",
       py::overload_cast<const unsigned int>(&Point<2>::operator(), py::const_),
       "Get one of the point's coordinates"
     );
+
+  py::bind_vector<std::vector<Point<2>>>(module, "VectorPoint2");
 
   using dealii::Triangulation;
   py::class_<Triangulation<2>>(module, "Triangulation2")
@@ -27,7 +31,10 @@ PYBIND11_MODULE(icepack_py, module)
          "Number of mesh cells (quads in 2d, hexes in 3d)")
     .def("n_vertices",
          &Triangulation<2>::n_vertices,
-         "Number of mesh vertices");
+         "Number of mesh vertices")
+    .def("get_vertices",
+         &Triangulation<2>::get_vertices,
+         "Get a reference to the array of mesh vertices");
 
   module.def("read_msh", &icepack::read_msh,
              "Read a .msh file into a Triangulation");
