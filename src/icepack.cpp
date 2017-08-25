@@ -9,6 +9,67 @@
 namespace py = pybind11;
 PYBIND11_MAKE_OPAQUE(std::vector<dealii::Point<2>>);
 
+
+namespace icepack
+{
+  template <int dim>
+  class PyFunction : public dealii::Function<dim>
+  {
+  public:
+    PyFunction(const py::function& f) : f_(f)
+    {}
+
+    double value(const dealii::Point<dim>& x, const unsigned int = 0) const
+    {
+      py::object q = f_(x);
+      return q.cast<double>();
+    }
+
+  protected:
+    const py::function& f_;
+  };
+
+
+  template <int dim>
+  class PyTensorFunction : public dealii::TensorFunction<1, dim>
+  {
+  public:
+    PyTensorFunction(const py::function& f) : f_(f)
+    {}
+
+    dealii::Tensor<1, dim> value(const dealii::Point<dim>& x) const
+    {
+      py::object q = f_(x);
+      return q.cast<dealii::Tensor<1, dim>>();
+    }
+
+  protected:
+    const py::function& f_;
+  };
+
+
+  Field<2> py_interpolate_field(
+    const Discretization<2>& discretization,
+    const py::function& f
+  )
+  {
+    const PyFunction<2> F(f);
+    return interpolate(discretization, F);
+  }
+
+
+  VectorField<2> py_interpolate_vector_field(
+    const Discretization<2>& discretization,
+    const py::function& f
+  )
+  {
+    const PyTensorFunction<2> F(f);
+    return interpolate(discretization, F);
+  }
+
+}
+
+
 PYBIND11_MODULE(icepack_py, module)
 {
   module.doc() = "icepack python bindings";
@@ -39,16 +100,19 @@ PYBIND11_MODULE(icepack_py, module)
   module.def("read_msh", &icepack::read_msh,
              "Read a .msh file into a Triangulation");
 
-  using icepack::Discretization;
-  py::class_<Discretization<2>>(module, "Discretization2")
+  py::class_<icepack::Discretization<2>>(module, "Discretization2")
     .def(py::init<const Triangulation<2>&, const unsigned int>());
 
-  using icepack::Field;
-  py::class_<Field<2>>(module, "Field2")
-    .def(py::init<const Discretization<2>&>());
+  py::class_<icepack::Field<2>>(module, "Field2")
+    .def(py::init<const icepack::Discretization<2>&>());
 
-  using icepack::VectorField;
-  py::class_<VectorField<2>>(module, "VectorField2")
-    .def(py::init<const Discretization<2>&>());
+  py::class_<icepack::VectorField<2>>(module, "VectorField2")
+    .def(py::init<const icepack::Discretization<2>&>());
+
+  module.def("interpolate_field", &icepack::py_interpolate_field,
+             "Interpolate a scalar field to the finite element basis");
+
+  module.def("interpolate_vector_field", &icepack::py_interpolate_vector_field,
+             "Interpolate a vector field to the finite element basis");
 }
 
