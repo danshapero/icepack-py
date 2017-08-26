@@ -70,11 +70,14 @@ namespace icepack
 }
 
 
+using dealii::Point;
+using dealii::Triangulation;
+using icepack::Discretization;
+
 PYBIND11_MODULE(icepack_py, module)
 {
   module.doc() = "icepack python bindings";
 
-  using dealii::Point;
   py::class_<Point<2>>(module, "Point2")
     .def(py::init<const double, const double>())
     .def(
@@ -85,7 +88,6 @@ PYBIND11_MODULE(icepack_py, module)
 
   py::bind_vector<std::vector<Point<2>>>(module, "VectorPoint2");
 
-  using dealii::Triangulation;
   py::class_<Triangulation<2>>(module, "Triangulation2")
     .def("n_active_cells",
          py::overload_cast<>(&Triangulation<2>::n_active_cells, py::const_),
@@ -100,14 +102,20 @@ PYBIND11_MODULE(icepack_py, module)
   module.def("read_msh", &icepack::read_msh,
              "Read a .msh file into a Triangulation");
 
-  py::class_<icepack::Discretization<2>>(module, "Discretization2")
-    .def(py::init<const Triangulation<2>&, const unsigned int>());
+
+  // Note the use of the `keep_alive` call policy. This ensures that the python
+  // wrapper object for discretization keeps a weak reference to the wrapper
+  // for the triangulation. Without this protection, the python garbage
+  // collector might clean up the triangulation before the discretization.
+  py::class_<Discretization<2>>(module, "Discretization2")
+    .def(py::init<const Triangulation<2>&, const unsigned int>(),
+         py::keep_alive<1, 2>());
 
   py::class_<icepack::Field<2>>(module, "Field2")
-    .def(py::init<const icepack::Discretization<2>&>());
+    .def(py::init<const Discretization<2>&>(), py::keep_alive<1, 2>());
 
   py::class_<icepack::VectorField<2>>(module, "VectorField2")
-    .def(py::init<const icepack::Discretization<2>&>());
+    .def(py::init<const Discretization<2>&>(), py::keep_alive<1, 2>());
 
   module.def("interpolate_field", &icepack::py_interpolate_field,
              "Interpolate a scalar field to the finite element basis");
