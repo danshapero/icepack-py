@@ -79,7 +79,10 @@ PYBIND11_MODULE(icepack_py, module)
          "Number of mesh vertices")
     .def("get_vertices",
          &Triangulation<2>::get_vertices,
-         "Get a reference to the array of mesh vertices");
+         "Get a reference to the array of mesh vertices")
+    .def("refine_global",
+         &Triangulation<2>::refine_global,
+         "Refine all cells of the triangulation for better resolution");
 
   module.def("read_msh", &icepack::read_msh,
              "Read a .msh file into a Triangulation");
