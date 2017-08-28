@@ -1,14 +1,12 @@
 
-#include <icepack/utilities.hpp>
-#include <icepack/discretization.hpp>
-#include <icepack/field.hpp>
+#include <icepack/physics/ice_shelf.hpp>
 #include <icepack/mesh.hpp>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl_bind.h>
+#include <pybind11/stl.h>
 
 namespace py = pybind11;
 PYBIND11_MAKE_OPAQUE(std::vector<dealii::Point<2>>);
-
 
 namespace icepack
 {
@@ -80,11 +78,9 @@ PYBIND11_MODULE(icepack_py, module)
 
   py::class_<Point<2>>(module, "Point2")
     .def(py::init<const double, const double>())
-    .def(
-      "__getitem__",
-      py::overload_cast<const unsigned int>(&Point<2>::operator(), py::const_),
-      "Get one of the point's coordinates"
-    );
+    .def("__getitem__",
+         py::overload_cast<const unsigned int>(&Point<2>::operator(), py::const_),
+         "Get one of the point's coordinates");
 
   py::bind_vector<std::vector<Point<2>>>(module, "VectorPoint2");
 
@@ -122,5 +118,23 @@ PYBIND11_MODULE(icepack_py, module)
 
   module.def("interpolate_vector_field", &icepack::py_interpolate_vector_field,
              "Interpolate a vector field to the finite element basis");
+
+  py::class_<icepack::MembraneStress>(module, "MembraneStress")
+    .def(py::init<const double>(),
+         py::arg("n") = 3.0);
+
+  py::class_<icepack::Viscosity>(module, "Viscosity")
+    .def(py::init<const icepack::MembraneStress&>(),
+         py::keep_alive<1, 2>(),
+         py::arg("membrane_stress") = icepack::MembraneStress());
+
+  py::class_<icepack::IceShelf>(module, "IceShelf")
+    .def(py::init<const std::set<dealii::types::boundary_id>&, const icepack::Viscosity&, const double>(),
+         "Create an object for modelling the flow of floating ice shelves",
+         py::keep_alive<1, 3>(),
+         py::arg("dirichlet_boundary_ids") = std::set<dealii::types::boundary_id>{0},
+         py::arg("viscosity") = icepack::Viscosity(icepack::MembraneStress()),
+         py::arg("convergence_tolerance") = 1.0e-6)
+    .def("solve", &icepack::IceShelf::solve);
 }
 
