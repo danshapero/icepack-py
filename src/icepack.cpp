@@ -28,25 +28,7 @@ namespace icepack
   };
 
 
-  template <int dim>
-  class PyTensorFunction : public dealii::TensorFunction<1, dim>
-  {
-  public:
-    PyTensorFunction(const py::function& f) : f_(f)
-    {}
-
-    dealii::Tensor<1, dim> value(const dealii::Point<dim>& x) const
-    {
-      py::object q = f_(x);
-      return q.cast<dealii::Tensor<1, dim>>();
-    }
-
-  protected:
-    const py::function& f_;
-  };
-
-
-  Field<2> py_interpolate_field(
+  Field<2> py_interpolate(
     const Discretization<2>& discretization,
     const py::function& f
   )
@@ -56,13 +38,15 @@ namespace icepack
   }
 
 
-  VectorField<2> py_interpolate_vector_field(
+  VectorField<2> py_interpolate(
     const Discretization<2>& discretization,
-    const py::function& f
+    const py::function& u,
+    const py::function& v
   )
   {
-    const PyTensorFunction<2> F(f);
-    return interpolate(discretization, F);
+    const PyFunction<2> U(u);
+    const PyFunction<2> V(v);
+    return interpolate(discretization, U, V);
   }
 
 }
@@ -71,6 +55,8 @@ namespace icepack
 using dealii::Point;
 using dealii::Triangulation;
 using icepack::Discretization;
+using icepack::Field;
+using icepack::VectorField;
 
 PYBIND11_MODULE(icepack_py, module)
 {
@@ -107,17 +93,23 @@ PYBIND11_MODULE(icepack_py, module)
     .def(py::init<const Triangulation<2>&, const unsigned int>(),
          py::keep_alive<1, 2>());
 
-  py::class_<icepack::Field<2>>(module, "Field2")
+  py::class_<Field<2>>(module, "Field2")
     .def(py::init<const Discretization<2>&>(), py::keep_alive<1, 2>());
 
-  py::class_<icepack::VectorField<2>>(module, "VectorField2")
+  py::class_<VectorField<2>>(module, "VectorField2")
     .def(py::init<const Discretization<2>&>(), py::keep_alive<1, 2>());
 
-  module.def("interpolate_field", &icepack::py_interpolate_field,
-             "Interpolate a scalar field to the finite element basis");
+  Field<2> (*scalar_interp)(const Discretization<2>&, const py::function&) =
+    &icepack::py_interpolate;
+  module.def("interpolate", scalar_interp,
+             "Interpolate a scalar field to the finite element basis",
+             py::keep_alive<0, 1>());
 
-  module.def("interpolate_vector_field", &icepack::py_interpolate_vector_field,
-             "Interpolate a vector field to the finite element basis");
+  VectorField<2> (*vector_interp)(const Discretization<2>&, const py::function&, const py::function&) =
+    &icepack::py_interpolate;
+  module.def("interpolate", vector_interp,
+             "Interpolate a vector field to the finite element basis",
+             py::keep_alive<0, 1>());
 
   py::class_<icepack::MembraneStress>(module, "MembraneStress")
     .def(py::init<const double>(),
