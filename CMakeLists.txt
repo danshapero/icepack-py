@@ -21,8 +21,16 @@ project(icepack_py)
 find_package(icepack REQUIRED)
 find_package(pybind11 REQUIRED)
 
+set (SOURCES
+  src/icepack.cpp
+  src/ice_shelf.cpp
+  src/field.cpp
+  src/interpolate.cpp
+  src/dealii.cpp
+)
+
 include_directories(${PYTHON_INCLUDE_DIR})
-pybind11_add_module(icepack_py MODULE src/icepack.cpp)
+pybind11_add_module(icepack_py MODULE ${SOURCES})
 
 # Hacks to make the wrapper library link with deal.II
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
