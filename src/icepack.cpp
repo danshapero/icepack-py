@@ -1,5 +1,6 @@
 
 #include <icepack/physics/ice_shelf.hpp>
+#include <icepack/physics/constants.hpp>
 #include <icepack/mesh.hpp>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl_bind.h>
@@ -61,6 +62,12 @@ using icepack::VectorField;
 PYBIND11_MODULE(icepack_py, module)
 {
   module.doc() = "icepack python bindings";
+
+  module.attr("rho_ice") = py::float_(icepack::constants::rho_ice);
+  module.attr("rho_water") = py::float_(icepack::constants::rho_water);
+  module.attr("gravity") = py::float_(icepack::constants::gravity);
+  module.def("rate_factor", &icepack::rate_factor,
+             "Compute the rate factor `A` in Glen's flow law");
 
   py::class_<Point<2>>(module, "Point2")
     .def(py::init<const double, const double>())
