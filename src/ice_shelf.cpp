@@ -51,7 +51,6 @@ namespace icepack
     py::class_<IceShelf>(module, "IceShelf")
       .def(py::init<const boundary_ids&, const Viscosity&, const double>(),
            "Create an object for modelling the flow of floating ice shelves",
-           py::keep_alive<1, 3>(),
            py::arg("dirichlet_boundary_ids") = boundary_ids{0},
            py::arg("viscosity") = Viscosity(MembraneStress()),
            py::arg("convergence_tolerance") = 1.0e-6)
