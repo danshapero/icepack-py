@@ -28,39 +28,36 @@ def _read1(ucd_file, num_points):
     return q
 
 
-# ----------------
-def read(filename):
+# ------------
+def read(file):
     """
     Read in a .ucd file containing a 2D deal.II quad mesh and velocity data.
     """
-    with open(filename, 'r') as f:
-        num_points, num_cells, d, _, _ = [int(s) for s in f.readline().split()]
+    num_points, num_cells, d, _, _ = [int(s) for s in file.readline().split()]
 
-        x = np.zeros(num_points, dtype = np.float64)
-        y = np.zeros(num_points, dtype = np.float64)
+    x = np.zeros(num_points, dtype = np.float64)
+    y = np.zeros(num_points, dtype = np.float64)
 
-        for i in range(num_points):
-            _, x[i], y[i], _ = [float(s) for s in f.readline().split()]
+    for i in range(num_points):
+        _, x[i], y[i], _ = [float(s) for s in file.readline().split()]
 
-        f.readline()
+    file.readline()
 
-        cell = np.zeros((num_cells, 4), dtype = int)
+    cell = np.zeros((num_cells, 4), dtype = int)
+    for i in range(num_cells):
+        cell[i, :] = [int(s) - 1 for s in file.readline().split()[3:]]
 
-        for i in range(num_cells):
-            cell[i, :] = [int(s) - 1 for s in f.readline().split()[3:]]
+    # Skip over two lines
+    file.readline()
+    file.readline()
 
-        # Skip over two lines
-        f.readline()
-        f.readline()
+    q = []
+    if d == 1:
+        q = _read1(file, num_points)
+        return x, y, cell, q
 
-        q = []
-        if d == 1:
-            q = _read1(f, num_points)
-            return x, y, cell, q
-
-        assert(d == 2)
-
-        u, v = _read2(f, num_points)
+    assert(d == 2)
+    u, v = _read2(file, num_points)
 
     return x, y, cell, u, v
 
