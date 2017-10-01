@@ -7,6 +7,7 @@ using icepack::Discretization;
 using icepack::Field;
 using icepack::VectorField;
 
+
 namespace icepack
 {
   void bind_field(py::module& module)
@@ -23,12 +24,26 @@ namespace icepack
     py::class_<Field<2>>(module, "Field2")
       .def(py::init<std::shared_ptr<const Discretization<2>>>())
       .def_property_readonly("discretization", &Field<2>::discretization)
-      .def("write_ucd", &Field<2>::write_ucd);
+      .def("write_ucd",
+           [](const Field<2>& u, py::object& file)
+           {
+             std::ostringstream stream;
+             u.write_ucd("u", stream);
+             py::object write = file.attr("write");
+             write(stream.str());
+           });
 
     py::class_<VectorField<2>>(module, "VectorField2")
       .def(py::init<std::shared_ptr<const Discretization<2>>>())
       .def_property_readonly("discretization", &VectorField<2>::discretization)
-      .def("write_ucd", &VectorField<2>::write_ucd);
+      .def("write_ucd",
+           [](const VectorField<2>& u, py::object& file)
+           {
+             std::ostringstream stream;
+             u.write_ucd("u", stream);
+             py::object write = file.attr("write");
+             write(stream.str());
+           });
   }
 }
 
