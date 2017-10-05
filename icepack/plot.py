@@ -1,10 +1,9 @@
 
 import icepack.ucd, icepack_py
 import numpy as np
-import matplotlib.pyplot as plt
 from io import StringIO
 
-def plot_field(u):
+def plot_field(axis, u):
     stream = StringIO()
     u.write_ucd(stream)
     text = stream.getvalue()
@@ -21,10 +20,6 @@ def plot_field(u):
     stream.close()
 
     triangles = icepack.ucd.quad_cells_to_triangles(x, y, cell);
-    fig = plt.figure()
-    ax = fig.gca()
-    ax.set_aspect('equal')
-    contours = ax.tricontourf(x, y, triangles, U)
-
-    return fig
+    contours = axis.tricontourf(x, y, triangles, U)
+    return contours
 
