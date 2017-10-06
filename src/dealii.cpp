@@ -5,7 +5,8 @@
 #include <pybind11/stl.h>
 #include "icepack_py.hpp"
 
-PYBIND11_MAKE_OPAQUE(std::vector<dealii::Point<2>>);
+PYBIND11_MAKE_OPAQUE(std::vector<dealii::Point<2>>)
+PYBIND11_MAKE_OPAQUE(std::vector<dealii::types::boundary_id>)
 
 using dealii::Point;
 using dealii::Triangulation;
@@ -21,6 +22,7 @@ namespace icepack
            "Get one of the point's coordinates");
 
     py::bind_vector<std::vector<Point<2>>>(module, "VectorPoint2");
+    py::bind_vector<std::vector<dealii::types::boundary_id>>(module, "VectorBoundaryID");
 
     py::class_<Triangulation<2>>(module, "Triangulation2")
       .def("n_active_cells",
@@ -32,6 +34,9 @@ namespace icepack
       .def("get_vertices",
            &Triangulation<2>::get_vertices,
            "Get a reference to the array of mesh vertices")
+      .def("get_boundary_ids",
+           &Triangulation<2>::get_boundary_ids,
+           "Return an array of all the numeric boundary IDs")
       .def("refine_global",
            &Triangulation<2>::refine_global,
            "Subdivide all the cells of a mesh for greater accuracy");
