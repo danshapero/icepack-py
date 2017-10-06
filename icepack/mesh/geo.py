@@ -28,6 +28,7 @@ def write(geo_file, Xs, successors, dx = 1.0e+22, quad = False):
 
     # Write out the PSLG edges
     edge_count = point_count
+    physical_entity_count = 1
     segments = set(range(num_segments))
     line_loops = []
     while segments:
@@ -58,6 +59,14 @@ def write(geo_file, Xs, successors, dx = 1.0e+22, quad = False):
             loop.append(edge_count + segment_length - 1)
             edge_count += segment_length
 
+            # Write out a physical line, so that gmsh gives this segment a
+            # different boundary ID in the resulting mesh file
+            physical_line = range(edge_count - segment_length, edge_count)
+            geo_file.write("Physical Line({0}) = {{{1}}};\n\n"
+                           .format(physical_entity_count,
+                                   ', '.join([str(k) for k in physical_line])))
+            physical_entity_count += 1
+
             # If the next segment is the first one, we're done with this
             # connected component
             if l == k0:
@@ -84,6 +93,10 @@ def write(geo_file, Xs, successors, dx = 1.0e+22, quad = False):
     geo_file.write("Plane Surface({0}) = {{{1}}};\n\n"
                    .format(line_loop_count,
                            ', '.join([str(k) for k in plane_surface])))
+
+    # Write out a physical surface for the whole PSLG
+    geo_file.write("Physical Surface({0}) = {{{1}}};\n\n"
+                   .format(physical_entity_count, line_loop_count))
 
     if quad:
         geo_file.write("Recombine Surface{{{0}}};\n"
