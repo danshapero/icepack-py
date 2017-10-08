@@ -17,6 +17,9 @@ namespace icepack
     py::class_<FieldType<rank, 2, primal>>(module, name)
       .def(py::init<std::shared_ptr<const Discretization<2>>>())
       .def_property_readonly("discretization", &F::discretization)
+      .def("__add__", [](const F& u, const F& v) -> F {return u + v;})
+      .def("__sub__", [](const F& u, const F& v) -> F {return u - v;})
+      .def("__rmul__", [](const F& u, const double a) -> F {return a * u;})
       .def("write_ucd",
            [](const F& u, py::object& file)
            {
@@ -25,6 +28,10 @@ namespace icepack
              py::object write = file.attr("write");
              write(stream.str());
            });
+
+    module.def("norm", &icepack::norm<rank, 2>);
+    module.def("dist", &icepack::dist<rank, 2>);
+    module.def("max", &icepack::max<rank, 2>);
   }
 
   void bind_field(py::module& module)
