@@ -1,5 +1,6 @@
 set (SOURCES
   icepack_py.cpp
+  mass_transport.cpp
   ice_shelf.cpp
   field.cpp
   interpolate.cpp
