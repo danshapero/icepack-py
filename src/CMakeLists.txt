@@ -3,6 +3,7 @@ set (SOURCES
   mass_transport.cpp
   ice_shelf.cpp
   field.cpp
+  grid_data.cpp
   interpolate.cpp
   dealii.cpp
 )

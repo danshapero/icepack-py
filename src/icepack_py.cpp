@@ -16,6 +16,7 @@ PYBIND11_MODULE(icepack_py, module)
   // source files in this directory.
   icepack::bind_dealii(module);
   icepack::bind_field(module);
+  icepack::bind_grid_data(module);
   icepack::bind_interpolate(module);
   icepack::bind_ice_shelf(module);
   icepack::bind_mass_transport(module);

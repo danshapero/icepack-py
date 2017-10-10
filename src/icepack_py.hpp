@@ -10,6 +10,7 @@ namespace icepack
 {
   void bind_dealii(py::module& module);
   void bind_field(py::module& module);
+  void bind_grid_data(py::module& module);
   void bind_interpolate(py::module& module);
   void bind_ice_shelf(py::module& module);
   void bind_mass_transport(py::module& module);
