@@ -20,6 +20,8 @@ namespace icepack
       .def("__add__", [](const F& u, const F& v) -> F {return u + v;})
       .def("__sub__", [](const F& u, const F& v) -> F {return u - v;})
       .def("__rmul__", [](const F& u, const double a) -> F {return a * u;})
+      .def("__truediv__", [](const F& u, const double a) -> F {return u / a;})
+      .def("__neg__", [](const F& u) -> F {return -u;})
       .def("write_ucd",
            [](const F& u, py::object& file)
            {
