@@ -28,3 +28,5 @@ def test_algebra():
     w = icepack.interpolate(discretization, lambda x: 2 * x[0] * x[1])
     assert icepack.dist(2.0 * v, w) / icepack.norm(w) < 1.0e-8
 
+    assert abs(icepack.inner_product(u, v)) < 1.0e-8
+

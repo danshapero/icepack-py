@@ -7,7 +7,6 @@ using icepack::Discretization;
 using icepack::Field;
 using icepack::VectorField;
 
-
 namespace icepack
 {
   template <int rank>
@@ -31,9 +30,17 @@ namespace icepack
              write(stream.str());
            });
 
-    module.def("norm", &icepack::norm<rank, 2>);
-    module.def("dist", &icepack::dist<rank, 2>);
-    module.def("max", &icepack::max<rank, 2>);
+    module.def("norm", &icepack::norm<rank, 2>,
+               "Compute the L^2 norm of a field");
+    module.def("dist", &icepack::dist<rank, 2>,
+               "Compute the L^2-distance between two fields");
+    module.def("max", &icepack::max<rank, 2>,
+               "Compute the maximum absolute value of a field");
+
+    double (*inner_product)(const FieldType<rank, 2>&, const FieldType<rank, 2>&) =
+      &icepack::inner_product;
+    module.def("inner_product", inner_product,
+               "Compute the L^2-inner product of two fields");
   }
 
   void bind_field(py::module& module)
