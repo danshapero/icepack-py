@@ -51,8 +51,7 @@ namespace icepack
     py::class_<Discretization<2>, std::shared_ptr<Discretization<2>>>(module, "Discretization2")
       .def_property_readonly("triangulation", &Discretization<2>::triangulation);
 
-    module.def("make_discretization", &icepack::make_discretization<2>,
-               py::keep_alive<0, 1>());
+    module.def("make_discretization", &icepack::make_discretization<2>);
 
     bind_field<0>(module, "Field2");
     bind_field<1>(module, "VectorField2");

@@ -42,7 +42,6 @@ namespace icepack
 
     py::class_<Viscosity>(module, "Viscosity")
       .def(py::init<const MembraneStress&>(),
-           py::keep_alive<1, 2>(),
            py::arg("membrane_stress") = MembraneStress());
 
     bind_newton_search_options<VectorField<2>>(module, "VectorField2");
