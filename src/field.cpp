@@ -48,7 +48,8 @@ namespace icepack
     module.def("read_msh", &icepack::read_msh,
                "Read a .msh file into a Triangulation");
 
-    py::class_<Discretization<2>, std::shared_ptr<Discretization<2>>>(module, "Discretization2")
+    py::class_<Discretization<2>, std::shared_ptr<Discretization<2>>>(
+      module, "Discretization2")
       .def_property_readonly("triangulation", &Discretization<2>::triangulation);
 
     module.def("make_discretization", &icepack::make_discretization<2>);

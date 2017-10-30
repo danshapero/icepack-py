@@ -52,8 +52,11 @@ namespace icepack
                "Interpolate an analytically defined scalar field to the finite"
                " element basis");
 
-    VectorField<2> (*vector_interp)(const Discretization<2>&, const py::function&, const py::function&) =
-      &icepack::py_interpolate;
+    VectorField<2> (*vector_interp)(
+      const Discretization<2>&,
+      const py::function&,
+      const py::function&
+    ) = &icepack::py_interpolate;
     module.def("interpolate", vector_interp,
                "Interpolate an analytically defined vector field to the finite"
                " element basis");

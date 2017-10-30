@@ -47,8 +47,21 @@ namespace icepack
 
     using boundary_ids = std::set<dealii::types::boundary_id>;
 
-    VectorField<2> (IceShelf::*diagnostic_solve)(const Field<2>&, const Field<2>&, const VectorField<2>&, const IceShelf::SolveOptions) const = &IceShelf::solve;
-    Field<2> (IceShelf::*prognostic_solve)(const double dt, const Field<2>&, const Field<2>&, const VectorField<2>&, const Field<2>&) const = &IceShelf::solve;
+
+    VectorField<2> (IceShelf::*diagnostic_solve)(
+      const Field<2>&,
+      const Field<2>&,
+      const VectorField<2>&,
+      const IceShelf::SolveOptions
+    ) const = &IceShelf::solve;
+
+    Field<2> (IceShelf::*prognostic_solve)(
+      const double,
+      const Field<2>&,
+      const Field<2>&,
+      const VectorField<2>&,
+      const Field<2>&
+    ) const = &IceShelf::solve;
 
     py::class_<IceShelf>(module, "IceShelf")
       .def(py::init<const boundary_ids&, const Viscosity&, const double>(),
