@@ -1,6 +1,5 @@
 
 #include <icepack/physics/ice_shelf.hpp>
-#include <icepack/physics/mass_transport.hpp>
 #include <pybind11/stl.h>
 #include "icepack_py.hpp"
 
