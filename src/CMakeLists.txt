@@ -1,7 +1,10 @@
+
 set (SOURCES
   icepack_py.cpp
   mass_transport.cpp
+  ice_stream.cpp
   ice_shelf.cpp
+  common.cpp
   field.cpp
   grid_data.cpp
   interpolate.cpp

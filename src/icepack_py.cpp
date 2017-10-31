@@ -18,7 +18,9 @@ PYBIND11_MODULE(icepack_py, module)
   icepack::bind_field(module);
   icepack::bind_grid_data(module);
   icepack::bind_interpolate(module);
+  icepack::bind_physics(module);
   icepack::bind_ice_shelf(module);
+  icepack::bind_ice_stream(module);
   icepack::bind_mass_transport(module);
 }
 
